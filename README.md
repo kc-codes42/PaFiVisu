@@ -39,7 +39,7 @@ A modern, web-based pathfinding algorithm visualizer built with Vanilla JavaScri
 - Tweak colors or add new algorithms easily.
 
 ## 🙏 Credits
-**Built by [kc.codes](https://github.com/kc-codes)**
+**Built by [kc-codes42](https://github.com/kc-codes42)**
 
 ---
 
