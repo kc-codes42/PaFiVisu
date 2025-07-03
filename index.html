@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pathfinding Visualizer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { inter: ['Inter', 'sans-serif'] },
+        },
+      },
+    }
+  </script>
+  <style>
+    #grid-container {
+      display: grid;
+      grid-template-columns: repeat(50, minmax(0, 1fr));
+      gap: 2px;
+      max-height: 80vh;
+      overflow: auto;
+    }
+  </style>
+</head>
+<body class="bg-[#f9f6f1] dark:bg-[#18181b] min-h-screen font-inter transition-colors duration-300">
+  <div class="controls flex flex-col md:flex-row flex-wrap gap-2 md:gap-4 items-center justify-center p-4 bg-white dark:bg-[#23232a] shadow-sm rounded-md mb-4">
+    <span class="font-bold text-2xl text-slate-700 dark:text-slate-200 mr-6 select-none">PaFiVisu</span>
+    <button id="set-start" class="bg-[#6ee7b7] hover:brightness-95 rounded-md px-4 py-2 shadow-sm transition duration-200 ease-in-out">Set Start Node</button>
+    <button id="set-end" class="bg-[#fb7185] hover:brightness-95 rounded-md px-4 py-2 shadow-sm transition duration-200 ease-in-out">Set End Node</button>
+    <button id="clear-board" class="bg-[#fca5a5] hover:brightness-95 rounded-md px-4 py-2 shadow-sm transition duration-200 ease-in-out">Clear Board</button>
+    <button id="clear-path" class="bg-[#7dd3fc] hover:brightness-95 rounded-md px-4 py-2 shadow-sm transition duration-200 ease-in-out">Clear Path</button>
+    <button id="random-maze" class="bg-[#e0e0e0] hover:brightness-95 rounded-md px-4 py-2 shadow-sm transition duration-200 ease-in-out">Random Maze</button>
+    <button id="theme-toggle" class="bg-[#e0e0e0] dark:bg-[#23232a] text-slate-700 dark:text-slate-200 border border-[#e0e0e0] dark:border-[#23232a] rounded-md px-4 py-2 shadow-sm transition duration-200 ease-in-out">🌙 Dark Mode</button>
+    <label for="algorithm-select" class="ml-2 font-semibold text-slate-700 dark:text-slate-200">Algorithm:</label>
+    <select id="algorithm-select" class="rounded-md px-2 py-1 shadow-sm bg-[#e0e0e0] dark:bg-[#23232a] text-slate-700 dark:text-slate-200 focus:outline-none">
+      <option value="bfs">Breadth-First Search</option>
+      <option value="dfs">Depth-First Search</option>
+      <option value="dijkstra">Dijkstra</option>
+      <option value="astar">A*</option>
+    </select>
+    <div class="flex items-center gap-2">
+      <label for="speed-range" class="font-semibold text-slate-700 dark:text-slate-200 whitespace-nowrap">Speed:</label>
+      <span class="text-xs text-slate-500 dark:text-slate-400 select-none">Fast</span>
+      <input type="range" id="speed-range" min="10" max="200" value="50" class="accent-[#7dd3fc] w-32">
+      <span class="text-xs text-slate-500 dark:text-slate-400 select-none">Slow</span>
+    </div>
+    <button id="visualize" class="bg-[#fde68a] hover:brightness-95 rounded-md px-4 py-2 shadow-sm transition duration-200 ease-in-out font-semibold">Visualize</button>
+    <span id="steps-info" class="ml-4 font-semibold text-slate-700 dark:text-slate-200"></span>
+  </div>
+  <div id="grid-container" class="mx-auto w-fit rounded-lg shadow-sm dark:bg-[#23232a]"></div>
+  <div id="overlay" class="fixed top-4 right-4 bg-white/80 rounded shadow px-4 py-2 z-50 flex items-center gap-2 text-slate-700 text-base hidden">
+    <svg class="animate-spin h-5 w-5 text-slate-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg>
+    <span>Pathfinding in progress…</span>
+  </div>
+  <footer class="fixed bottom-4 right-4 z-40 bg-white/80 dark:bg-[#23232a]/80 text-slate-700 dark:text-slate-200 px-4 py-2 rounded shadow text-sm select-none pointer-events-none">
+    Built by kc.codes
+  </footer>
+  <script type="module" src="App.js"></script>
+  <script>
+    // Theme toggle logic
+    const themeBtn = document.getElementById('theme-toggle');
+    function setTheme(dark) {
+      document.documentElement.classList.toggle('dark', dark);
+      themeBtn.textContent = dark ? '☀️ Light Mode' : '🌙 Dark Mode';
+    }
+    // Initial theme: system preference
+    setTheme(window.matchMedia('(prefers-color-scheme: dark)').matches);
+    themeBtn.onclick = () => setTheme(!document.documentElement.classList.contains('dark'));
+  </script>
+</body>
+</html> 
