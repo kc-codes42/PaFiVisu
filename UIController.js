@@ -3,6 +3,7 @@ export class UIController {
     this.gridManager = gridManager;
     this.mode = null; // 'start', 'end', or null
     this.gridContainer = document.getElementById('grid-container');
+    this.isMouseDown = false; // Track mouse state for drag drawing
     this.attachCellHandler();
   }
 
@@ -22,22 +23,66 @@ export class UIController {
   }
 
   attachCellHandler() {
+    // Remove old listeners if any
+    this.gridContainer.onmousedown = null;
+    this.gridContainer.onmouseup = null;
+    this.gridContainer.onmouseleave = null;
+    this.gridContainer.onclick = null;
+
+    // Track mouse state globally for this grid
+    this.gridContainer.addEventListener('mousedown', (e) => {
+      this.isMouseDown = true;
+      if (!e.target.classList.contains('cell')) return;
+      if (window.isRunning) return;
+      const row = +e.target.dataset.row;
+      const col = +e.target.dataset.col;
+      this.handleCellAction(row, col);
+    });
+    this.gridContainer.addEventListener('mouseup', () => {
+      this.isMouseDown = false;
+    });
+    this.gridContainer.addEventListener('mouseleave', () => {
+      this.isMouseDown = false;
+    });
+
+    // Delegate mouseover for drag drawing
+    this.gridContainer.addEventListener('mouseover', (e) => {
+      if (!this.isMouseDown) return;
+      if (!e.target.classList.contains('cell')) return;
+      if (window.isRunning) return;
+      const row = +e.target.dataset.row;
+      const col = +e.target.dataset.col;
+      this.handleCellAction(row, col, true);
+    });
+
+    // Single click fallback (for touch or click)
     this.gridContainer.onclick = (e) => {
       if (!e.target.classList.contains('cell')) return;
       if (window.isRunning) return;
       const row = +e.target.dataset.row;
       const col = +e.target.dataset.col;
-      if (this.mode === 'start') {
-        this.gridManager.setStart(row, col);
-        this.setMode(null);
-      } else if (this.mode === 'end') {
-        this.gridManager.setEnd(row, col);
-        this.setMode(null);
+      this.handleCellAction(row, col);
+    };
+  }
+
+  handleCellAction(row, col, isDrag = false) {
+    if (this.mode === 'start') {
+      this.gridManager.setStart(row, col);
+      this.setMode(null);
+    } else if (this.mode === 'end') {
+      this.gridManager.setEnd(row, col);
+      this.setMode(null);
+    } else {
+      // Only toggle wall on drag if not already wall (prevents flicker)
+      if (isDrag) {
+        if (this.gridManager.getState(row, col) !== 'wall') {
+          this.gridManager.toggleWall(row, col);
+        }
       } else {
         this.gridManager.toggleWall(row, col);
       }
-      this.render();
-    };
+    }
+    this.render();
   }
 
   render() {
@@ -94,4 +139,4 @@ export class UIController {
     else if (state === 'path') color = 'bg-[#fde68a]';
     return base + color;
   }
-} 
+}
